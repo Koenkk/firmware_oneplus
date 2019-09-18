@@ -1,24 +1,22 @@
 #!/bin/bash
-# E.G. ./extract.sh <FILE> oneplus5 out/oneplus_5/oneplus_5_oxygenos_4.5.12_firmware.zip
+# E.G. ./extract.sh <FILE>
 
 # Variables
 FILE=$1
-DEVICE=$2
-OUT=$3
+TMP=.tmp
+OUT=firmware.zip
 
 # Extract ROM
-rm -rf tmp
-mkdir tmp
-unzip $FILE -d tmp
+rm -rf $TMP
+mkdir $TMP
+unzip $FILE firmware-update/* RADIO/* -d $TMP
+mv $TMP/RADIO/* $TMP/firmware-update/
+rm -rf $TMP/RADIO
 
 # Remove old firmware
-rm -rf $DEVICE/firmware-update/*
-
-# Copy new firmware
-cp tmp/firmware-update/* $DEVICE/firmware-update
-cp tmp/RADIO/* $DEVICE/firmware-update
-rm -rf tmp
+rm -f $OUT
 
 # Package new firmware
-cd $DEVICE
-zip -9 -r ../$OUT *
+zip -9 -r $OUT $TMP/firmware-update
+
+rm -rf $TMP
